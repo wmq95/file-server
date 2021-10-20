@@ -51,9 +51,4 @@ public class OpenOfficeUtil {
             connection.disconnect();
         }
     }
-
-    public static void main(String[] args) {
-        OpenOfficeUtil openOfficeUtil = new OpenOfficeUtil();
-        openOfficeUtil.convert2Pdf("d:/test.doc", "d:/pdf.pdf");
-    }
 }

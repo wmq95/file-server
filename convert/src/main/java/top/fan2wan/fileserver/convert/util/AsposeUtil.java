@@ -16,12 +16,6 @@ import java.io.InputStream;
  */
 public class AsposeUtil {
 
-    public static void main(String[] args) throws Exception {
-        AsposeUtil util = new AsposeUtil();
-//        util.word2pdf(word_path, "d:/test.pdf");
-//        util.word2Pdf_02(word_path, "d:/aspose2.pdf");
-    }
-
     public void word2pdf(String path, String outPath) throws Exception {
         Document wpd = new Document(path);
         wpd.save(outPath, SaveFormat.PDF);
