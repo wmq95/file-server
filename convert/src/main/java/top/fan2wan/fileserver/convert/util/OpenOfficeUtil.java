@@ -20,6 +20,16 @@ import java.net.ConnectException;
  * 使用前请检查OpenOffice服务是否已经开启, OpenOffice进程名称：soffice.exe | soffice.bin
  */
 public class OpenOfficeUtil {
+    private int port;
+
+    public OpenOfficeUtil() {
+        this(8100);
+    }
+
+    public OpenOfficeUtil(int port) {
+        this.port = port;
+    }
+
     private static Logger logger = LoggerFactory.getLogger(OpenOfficeUtil.class);
 
     public void convert2Pdf(String path, String outPut) {
@@ -34,12 +44,12 @@ public class OpenOfficeUtil {
     }
 
     private void convert(File in, File out) {
-        OpenOfficeConnection connection = new SocketOpenOfficeConnection(8100);
+        OpenOfficeConnection connection = new SocketOpenOfficeConnection(port);
         try {
             connection.connect();
         } catch (ConnectException e) {
             logger.error("filed to connect to openOffice service", e);
-            return;
+            throw new RuntimeException(e.getMessage());
         }
 
         try {

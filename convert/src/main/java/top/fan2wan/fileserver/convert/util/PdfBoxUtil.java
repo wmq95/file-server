@@ -2,6 +2,7 @@ package top.fan2wan.fileserver.convert.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.sun.istack.internal.NotNull;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -17,6 +18,19 @@ import java.io.IOException;
  * @Description: util for pdfBox
  */
 public class PdfBoxUtil {
+    private String tempDir;
+    private Long maxMemoryUsage;
+
+    public PdfBoxUtil() {
+        this(null, DEFAULT_SIZE);
+    }
+
+    public PdfBoxUtil(String tempDir, @NotNull Long maxMemoryUsage) {
+        this.tempDir = tempDir;
+        this.maxMemoryUsage = maxMemoryUsage;
+    }
+
+    private final static Long DEFAULT_SIZE = 1024 * 1024 * 100L;
     private static Logger logger = LoggerFactory.getLogger(PdfBoxUtil.class);
 
     /**
@@ -29,8 +43,7 @@ public class PdfBoxUtil {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(path), " path can not be null");
         String content = null;
         try {
-            // 设置100M
-            PDDocument document = PDDocument.load(new File(path), MemoryUsageSetting.setupMixed(1024 * 1024 * 100));
+            PDDocument document = PDDocument.load(new File(path), getMemorySetting());
             // 读文本内容
             PDFTextStripper stripper = new PDFTextStripper();
             // 设置按顺序输出
@@ -43,5 +56,13 @@ public class PdfBoxUtil {
             logger.error("fail to read pdf file ,error was\n", e);
         }
         return content;
+    }
+
+    private MemoryUsageSetting getMemorySetting() {
+        MemoryUsageSetting memoryUsageSetting = MemoryUsageSetting.setupMixed(maxMemoryUsage);
+        if (!Strings.isNullOrEmpty(tempDir)) {
+            memoryUsageSetting.setTempDir(new File(tempDir));
+        }
+        return memoryUsageSetting;
     }
 }
