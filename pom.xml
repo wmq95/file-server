@@ -7,7 +7,7 @@
     <groupId>top.fan2wan</groupId>
     <artifactId>file-server</artifactId>
     <packaging>pom</packaging>
-    <version>${server.verson}</version>
+    <version>1.0-SNAPSHOT</version>
     <modules>
         <module>resource</module>
         <module>convert</module>

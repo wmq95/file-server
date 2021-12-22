@@ -5,3 +5,9 @@ server:
 spring:
   application:
     name: convert
+oss:
+  domain: r0yg7lr7e.hn-bkt.clouddn.com
+  bucket: fant
+  accessKey:
+  secretKey:
+  expire: 3600
