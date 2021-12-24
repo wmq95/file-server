@@ -8,14 +8,19 @@
     <artifactId>file-server</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
     <modules>
         <module>resource</module>
         <module>convert</module>
         <module>oss</module>
+        <module>mq</module>
     </modules>
 
     <properties>
-        <server.verson>1.0-SNAPSHOT</server.verson>
+        <convert.version>1.x</convert.version>
+        <mq.version>1.x</mq.version>
+        <oss.version>1.x</oss.version>
+        <resource.version>1.x</resource.version>
         <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
         <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
         <java.version>1.8</java.version>
@@ -31,6 +36,7 @@
         <common-io.version>2.6</common-io.version>
         <pdfbox.version>2.0.24</pdfbox.version>
         <oepnoffice.version>3.0.1</oepnoffice.version>
+        <stream.rabbitmq.version>3.1.4</stream.rabbitmq.version>
     </properties>
 
     <dependencyManagement>
@@ -123,6 +129,13 @@
                 <groupId>org.openoffice</groupId>
                 <artifactId>unoil</artifactId>
                 <version>${oepnoffice.version}</version>
+            </dependency>
+
+            <!-- springCloud 集成RabbitMQ -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+                <version>${stream.rabbitmq.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

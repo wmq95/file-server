@@ -9,24 +9,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>file-server.resource</artifactId>
-    <version>${resource.version}</version>
+    <artifactId>file-server.mq</artifactId>
+    <version>${mq.version}</version>
 
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-elasticsearch</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
         </dependency>
     </dependencies>
 </project>

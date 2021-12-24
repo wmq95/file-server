@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>file-server.convert</artifactId>
+    <version>${convert.version}</version>
 
     <dependencies>
 
@@ -93,7 +94,7 @@
         <dependency>
             <groupId>top.fan2wan</groupId>
             <artifactId>file-server.oss</artifactId>
-            <version>${project.version}</version>
+            <version>${oss.version}</version>
         </dependency>
     </dependencies>
 </project>

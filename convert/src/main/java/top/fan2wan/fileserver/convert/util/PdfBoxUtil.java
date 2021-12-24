@@ -2,7 +2,6 @@ package top.fan2wan.fileserver.convert.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.sun.istack.internal.NotNull;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -25,7 +24,7 @@ public class PdfBoxUtil {
         this(null, DEFAULT_SIZE);
     }
 
-    public PdfBoxUtil(String tempDir, @NotNull Long maxMemoryUsage) {
+    public PdfBoxUtil(String tempDir, Long maxMemoryUsage) {
         this.tempDir = tempDir;
         this.maxMemoryUsage = maxMemoryUsage;
     }
