@@ -21,8 +21,8 @@
         <mq.version>1.x</mq.version>
         <oss.version>1.x</oss.version>
         <resource.version>1.x</resource.version>
-        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
-        <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
+        <spring-cloud.version>Hoxton.SR12</spring-cloud.version>
+        <spring-boot.version>2.5.8</spring-boot.version>
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

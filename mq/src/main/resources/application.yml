@@ -1,0 +1,13 @@
+spring:
+  rabbitmq:
+    addresses: amqps://fqkoxhhx:4OlK0wvSve7FRmY__h3mKh4C-zmwgln-@fish.rmq.cloudamqp.com/fqkoxhhx
+  cloud:
+    stream:
+      bindings:
+        log-in-0:
+          destination: myLog
+          group: logGroup
+        log-out-0:
+          function: out
+          destination: myLog
+          group: logGroup
