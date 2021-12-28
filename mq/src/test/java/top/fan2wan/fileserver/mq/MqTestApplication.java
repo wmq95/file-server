@@ -1,8 +1,12 @@
 package top.fan2wan.fileserver.mq;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.function.Consumer;
 
@@ -12,10 +16,25 @@ import java.util.function.Consumer;
  * @Description: test for mq
  */
 @SpringBootApplication
-public class MqTestApplication {
+public class MqTestApplication implements ApplicationContextAware {
+    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static ApplicationContext context;
 
     @Bean
     public Consumer<String> log() {
         return System.out::println;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        context = applicationContext;
+    }
+
+    public static void getBean(Class zclass) {
+        try {
+            System.out.println(objectMapper.writer().writeValueAsString(context.getBean(zclass)));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 }

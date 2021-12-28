@@ -1,11 +1,11 @@
 package top.fan2wan.fileserver.mq;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.stream.config.BindingServiceProperties;
 import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * @Author: fanT
@@ -13,7 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @Description: test
  */
 @SpringBootTest(classes = MqTestApplication.class)
-@RunWith(SpringRunner.class)
 public class MqTest {
 
     @Autowired
@@ -21,14 +20,12 @@ public class MqTest {
 
     @Test
     public void test_producer() {
-        try {
-            Thread.sleep(1000*5);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         streamBridge.send("log-out-0", " test log");
+
+        MqTestApplication.getBean(BindingServiceProperties.class);
         try {
-            Thread.sleep(1000*5);
+            Thread.sleep(1000 * 5);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

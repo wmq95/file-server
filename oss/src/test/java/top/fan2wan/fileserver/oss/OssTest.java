@@ -10,8 +10,7 @@ import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +24,6 @@ import java.io.IOException;
  * @Date: 2021/10/15 13:27
  * @Description: test for oss
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = ApplicationTest.class)
 public class OssTest {
     private static Logger logger = LoggerFactory.getLogger(OssTest.class);
