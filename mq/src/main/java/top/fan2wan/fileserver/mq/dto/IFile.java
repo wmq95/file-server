@@ -5,5 +5,5 @@ package top.fan2wan.fileserver.mq.dto;
  * @Date: 2021/12/24 13:52
  * @Description: dto for sendFile
  */
-public interface ISendFile {
+public interface IFile {
 }

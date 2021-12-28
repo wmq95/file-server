@@ -37,10 +37,24 @@
         <pdfbox.version>2.0.24</pdfbox.version>
         <oepnoffice.version>3.0.1</oepnoffice.version>
         <stream.rabbitmq.version>3.1.4</stream.rabbitmq.version>
+        <spring-cloud-stream-binder-rabbit.version>3.1.4</spring-cloud-stream-binder-rabbit.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- springCloud 集成RabbitMQ -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+                <version>${stream.rabbitmq.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-stream-binder-rabbit-core</artifactId>
+                <version>${stream.rabbitmq.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -129,13 +143,6 @@
                 <groupId>org.openoffice</groupId>
                 <artifactId>unoil</artifactId>
                 <version>${oepnoffice.version}</version>
-            </dependency>
-
-            <!-- springCloud 集成RabbitMQ -->
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
-                <version>${stream.rabbitmq.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

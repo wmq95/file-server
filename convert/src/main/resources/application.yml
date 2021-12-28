@@ -5,6 +5,8 @@ server:
 spring:
   application:
     name: convert
+  rabbitmq:
+    addresses: amqps://fqkoxhhx:4OlK0wvSve7FRmY__h3mKh4C-zmwgln-@fish.rmq.cloudamqp.com/fqkoxhhx
 oss:
   domain: r0yg7lr7e.hn-bkt.clouddn.com
   bucket: fant
