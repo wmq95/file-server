@@ -22,8 +22,17 @@ public class MqTestApplication implements ApplicationContextAware {
 
     @Bean
     public Consumer<String> log() {
-        return System.out::println;
+        return s -> {
+            System.out.println(s);
+            //int i = Integer.parseInt(s);
+            //System.out.println(i);
+        };
     }
+
+    /*@Bean
+    public Consumer<IFile> log() {
+        return System.out::println;
+    }*/
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
