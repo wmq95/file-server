@@ -6,20 +6,12 @@ package top.fan2wan.fileserver.oss.dto;
  * @Description: dto for OssFile
  */
 public interface IOssFile {
-
     /**
-     * 保存文件时得本地路径
+     * 本地路径
      *
      * @return 文件本地路径
      */
-    String getSavePath();
-
-    /**
-     * 下载文件时 本地路径
-     *
-     * @return 文件本地路径
-     */
-    String getDownloadPath();
+    String getLocalPath();
 
     /**
      * 获取文件名称

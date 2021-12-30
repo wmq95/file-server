@@ -44,10 +44,10 @@ public class XiNiuOssServiceImpl implements OssService {
     @Override
     public void save(IOssFile ossFile) {
 
-        Assert.notBlank(ossFile.getSavePath(), "path can not be null");
+        Assert.notBlank(ossFile.getLocalPath(), "path can not be null");
         Assert.notBlank(ossFile.getOssFilePath(), "oss filePath can not be null");
 
-        doSave(ossFile.getSavePath(), ossFile.getOssFilePath());
+        doSave(ossFile.getLocalPath(), ossFile.getOssFilePath());
     }
 
     private void doSave(String localFilePath, String ossFilePth) {
@@ -75,9 +75,9 @@ public class XiNiuOssServiceImpl implements OssService {
     @Override
     public void download(IOssFile ossFile) {
         Assert.notBlank(ossFile.getOssFilePath(), " oss filePath can not be null");
-        Assert.notBlank(ossFile.getDownloadPath(), "oss file downloadPath can not be null");
+        Assert.notBlank(ossFile.getLocalPath(), "oss file downloadPath can not be null");
 
-        doDownload(ossFile.getOssFilePath(), ossFile.getDownloadPath());
+        doDownload(ossFile.getOssFilePath(), ossFile.getLocalPath());
     }
 
     private void doDownload(String ossFilePath, String downloadPath) {
