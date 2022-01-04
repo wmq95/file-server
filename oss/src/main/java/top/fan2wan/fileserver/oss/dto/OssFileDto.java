@@ -43,6 +43,26 @@ public class OssFileDto implements IOssFile {
         return filePolicy;
     }
 
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void setOssFilePath(String ossFilePath) {
+        this.ossFilePath = ossFilePath;
+    }
+
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public void setFilePolicy(String filePolicy) {
+        this.filePolicy = filePolicy;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

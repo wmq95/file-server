@@ -17,16 +17,23 @@ import java.io.IOException;
  * @Description: util for pdfBox
  */
 public class PdfBoxUtil {
-    private String tempDir;
+    private String tmpDir;
     private Long maxMemoryUsage;
+
+    private MemoryUsageSetting setting;
 
     public PdfBoxUtil() {
         this(null, DEFAULT_SIZE);
     }
 
-    public PdfBoxUtil(String tempDir, Long maxMemoryUsage) {
-        this.tempDir = tempDir;
+    public PdfBoxUtil(String tmpDir) {
+        this(tmpDir, DEFAULT_SIZE);
+    }
+
+    public PdfBoxUtil(String tmpDir, Long maxMemoryUsage) {
+        this.tmpDir = tmpDir;
         this.maxMemoryUsage = maxMemoryUsage;
+        this.setting = getMemorySetting();
     }
 
     private final static Long DEFAULT_SIZE = 1024 * 1024 * 100L;
@@ -42,7 +49,7 @@ public class PdfBoxUtil {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(path), " path can not be null");
         String content = null;
         try {
-            PDDocument document = PDDocument.load(new File(path), getMemorySetting());
+            PDDocument document = PDDocument.load(new File(path), setting);
             // 读文本内容
             PDFTextStripper stripper = new PDFTextStripper();
             // 设置按顺序输出
@@ -59,8 +66,8 @@ public class PdfBoxUtil {
 
     private MemoryUsageSetting getMemorySetting() {
         MemoryUsageSetting memoryUsageSetting = MemoryUsageSetting.setupMixed(maxMemoryUsage);
-        if (!Strings.isNullOrEmpty(tempDir)) {
-            memoryUsageSetting.setTempDir(new File(tempDir));
+        if (!Strings.isNullOrEmpty(tmpDir)) {
+            memoryUsageSetting.setTempDir(new File(tmpDir));
         }
         return memoryUsageSetting;
     }

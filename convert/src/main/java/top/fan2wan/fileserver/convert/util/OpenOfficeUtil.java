@@ -21,6 +21,7 @@ import java.net.ConnectException;
  */
 public class OpenOfficeUtil {
     private int port;
+    private OpenOfficeConnection connection;
 
     public OpenOfficeUtil() {
         this(8100);
@@ -28,6 +29,13 @@ public class OpenOfficeUtil {
 
     public OpenOfficeUtil(int port) {
         this.port = port;
+        this.connection = new SocketOpenOfficeConnection(port);
+        try {
+            this.connection.connect();
+        } catch (ConnectException e) {
+            logger.error("filed to connect to openOffice service", e);
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     private static Logger logger = LoggerFactory.getLogger(OpenOfficeUtil.class);
@@ -44,21 +52,13 @@ public class OpenOfficeUtil {
     }
 
     private void convert(File in, File out) {
-        OpenOfficeConnection connection = new SocketOpenOfficeConnection(port);
-        try {
-            connection.connect();
-        } catch (ConnectException e) {
-            logger.error("filed to connect to openOffice service", e);
-            throw new RuntimeException(e.getMessage());
-        }
-
         try {
             DocumentConverter converter = new OpenOfficeDocumentConverter(connection);
             converter.convert(in, out);
-        } catch (Exception e) {
-            logger.error("failed to convert file", e);
         } finally {
-            connection.disconnect();
+            // 最后释放连接
+            this.connection.disconnect();
         }
+
     }
 }

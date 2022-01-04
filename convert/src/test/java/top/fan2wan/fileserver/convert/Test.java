@@ -15,8 +15,20 @@ public class Test {
     private static Logger logger = LoggerFactory.getLogger(Test.class);
 
     public static void main(String[] args) {
-        OpenOfficeUtil openOfficeUtil = new OpenOfficeUtil();
-        openOfficeUtil.convert2Pdf("d:/openoffice/work/test.xlsx", "d:/openoffice/work/test.pdf");
+        new Thread(() -> {
+            OpenOfficeUtil openOfficeUtil = new OpenOfficeUtil();
+            logger.info("start to convert ...");
+            openOfficeUtil.convert2Pdf("d:/openoffice/work/test.doc", "d:/openoffice/work/test2.pdf");
+            logger.info("convert success...");
+        }, "BB").start();
+
+        new Thread(() -> {
+            OpenOfficeUtil openOfficeUtil = new OpenOfficeUtil();
+            logger.info("start to convert ...");
+            openOfficeUtil.convert2Pdf("d:/openoffice/work/test.pptx", "d:/openoffice/work/test1.pdf");
+            logger.info("convert success...");
+        }, "AA").start();
+
 
         PdfBoxUtil util = new PdfBoxUtil();
         logger.info(util.readPdf("d:/openoffice/work/aspose.pdf"));

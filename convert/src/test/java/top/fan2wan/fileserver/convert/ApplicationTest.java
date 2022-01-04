@@ -24,7 +24,7 @@ public class ApplicationTest {
     public void test() {
         OssFileDto download = new OssFileDto();
         download.setOssFilePath("2021/10/12/1.doc");
-        download.setDownloadPath(dir + "download.doc");
+        download.setLocalPath(dir + "download.doc");
         ossService.download(download);
 
         //转换
@@ -33,7 +33,7 @@ public class ApplicationTest {
 
         //上传
         OssFileDto save = new OssFileDto();
-        save.setSavePath(dir + "convert.pdf");
+        save.setLocalPath(dir + "convert.pdf");
         save.setOssFilePath("2021/10/12/convert.pdf");
         ossService.save(save);
     }
