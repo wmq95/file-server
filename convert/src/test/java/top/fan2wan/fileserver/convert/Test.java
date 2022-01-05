@@ -18,19 +18,19 @@ public class Test {
         new Thread(() -> {
             OpenOfficeUtil openOfficeUtil = new OpenOfficeUtil();
             logger.info("start to convert ...");
-            openOfficeUtil.convert2Pdf("d:/openoffice/work/test.doc", "d:/openoffice/work/test2.pdf");
+            openOfficeUtil.convert2Pdf("d:/openoffice/work/test.doc", "d:/openoffice/work/b/test2.pdf");
             logger.info("convert success...");
         }, "BB").start();
 
         new Thread(() -> {
             OpenOfficeUtil openOfficeUtil = new OpenOfficeUtil();
             logger.info("start to convert ...");
-            openOfficeUtil.convert2Pdf("d:/openoffice/work/test.pptx", "d:/openoffice/work/test1.pdf");
+            openOfficeUtil.convert2Pdf("d:/openoffice/work/test.pptx", "d:/openoffice/work/a/test1.pdf");
             logger.info("convert success...");
         }, "AA").start();
 
 
-        PdfBoxUtil util = new PdfBoxUtil();
-        logger.info(util.readPdf("d:/openoffice/work/aspose.pdf"));
+        //PdfBoxUtil util = new PdfBoxUtil();
+        //logger.info(util.readPdf("d:/openoffice/work/aspose.pdf"));
     }
 }

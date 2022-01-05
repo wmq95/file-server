@@ -21,7 +21,6 @@ import java.net.ConnectException;
  */
 public class OpenOfficeUtil {
     private int port;
-    private OpenOfficeConnection connection;
 
     public OpenOfficeUtil() {
         this(8100);
@@ -29,17 +28,16 @@ public class OpenOfficeUtil {
 
     public OpenOfficeUtil(int port) {
         this.port = port;
-        this.connection = new SocketOpenOfficeConnection(port);
-        try {
-            this.connection.connect();
-        } catch (ConnectException e) {
-            logger.error("filed to connect to openOffice service", e);
-            throw new RuntimeException(e.getMessage());
-        }
     }
 
     private static Logger logger = LoggerFactory.getLogger(OpenOfficeUtil.class);
 
+    /**
+     * 转换文件
+     *
+     * @param path   源文件路径
+     * @param outPut 输出路径 路径不存在 会自己创建上级目录
+     */
     public void convert2Pdf(String path, String outPut) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(path), "path can not be null");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(outPut), "outPath can not be null");
@@ -48,17 +46,16 @@ public class OpenOfficeUtil {
         File out = new File(outPut);
         Preconditions.checkArgument(!out.exists(), "out file was exists");
 
-        convert(in, out);
-    }
-
-    private void convert(File in, File out) {
+        OpenOfficeConnection connection = new SocketOpenOfficeConnection(port);
         try {
+            connection.connect();
             DocumentConverter converter = new OpenOfficeDocumentConverter(connection);
             converter.convert(in, out);
+        } catch (ConnectException e) {
+            logger.error("filed to connect to openOffice service", e);
+            throw new RuntimeException(e.getMessage());
         } finally {
-            // 最后释放连接
-            this.connection.disconnect();
+            connection.disconnect();
         }
-
     }
 }

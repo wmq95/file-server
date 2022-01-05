@@ -17,7 +17,7 @@ import java.io.IOException;
  * @Description: util for pdfBox
  */
 public class PdfBoxUtil {
-    private String tmpDir;
+    private String tempDir;
     private Long maxMemoryUsage;
 
     private MemoryUsageSetting setting;
@@ -26,12 +26,12 @@ public class PdfBoxUtil {
         this(null, DEFAULT_SIZE);
     }
 
-    public PdfBoxUtil(String tmpDir) {
-        this(tmpDir, DEFAULT_SIZE);
+    public PdfBoxUtil(String tempDir) {
+        this(tempDir, DEFAULT_SIZE);
     }
 
-    public PdfBoxUtil(String tmpDir, Long maxMemoryUsage) {
-        this.tmpDir = tmpDir;
+    public PdfBoxUtil(String tempDir, Long maxMemoryUsage) {
+        this.tempDir = tempDir;
         this.maxMemoryUsage = maxMemoryUsage;
         this.setting = getMemorySetting();
     }
@@ -66,8 +66,8 @@ public class PdfBoxUtil {
 
     private MemoryUsageSetting getMemorySetting() {
         MemoryUsageSetting memoryUsageSetting = MemoryUsageSetting.setupMixed(maxMemoryUsage);
-        if (!Strings.isNullOrEmpty(tmpDir)) {
-            memoryUsageSetting.setTempDir(new File(tmpDir));
+        if (!Strings.isNullOrEmpty(tempDir)) {
+            memoryUsageSetting.setTempDir(new File(tempDir));
         }
         return memoryUsageSetting;
     }

@@ -20,7 +20,7 @@ public interface OssService {
     void save(IOssFile ossFile);
 
     /**
-     * 下载oss文件
+     * 下载oss文件 会自动创建目录
      *
      * @param ossFile 文件对象
      */

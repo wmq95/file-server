@@ -15,4 +15,4 @@ oss:
   expire: 3600
 #临时文件存放目录
 file:
-  tmpDir:
+  tempDir:
