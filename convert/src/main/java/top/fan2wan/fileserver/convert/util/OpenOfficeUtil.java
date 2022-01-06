@@ -37,8 +37,9 @@ public class OpenOfficeUtil {
      *
      * @param path   源文件路径
      * @param outPut 输出路径 路径不存在 会自己创建上级目录
+     * @throws ConnectException
      */
-    public void convert2Pdf(String path, String outPut) {
+    public void convert2Pdf(String path, String outPut) throws ConnectException {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(path), "path can not be null");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(outPut), "outPath can not be null");
         File in = new File(path);
@@ -51,9 +52,6 @@ public class OpenOfficeUtil {
             connection.connect();
             DocumentConverter converter = new OpenOfficeDocumentConverter(connection);
             converter.convert(in, out);
-        } catch (ConnectException e) {
-            logger.error("filed to connect to openOffice service", e);
-            throw new RuntimeException(e.getMessage());
         } finally {
             connection.disconnect();
         }

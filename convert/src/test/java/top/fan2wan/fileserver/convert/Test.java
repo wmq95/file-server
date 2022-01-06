@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import top.fan2wan.fileserver.convert.util.OpenOfficeUtil;
 import top.fan2wan.fileserver.convert.util.PdfBoxUtil;
 
+import java.net.ConnectException;
+
 
 /**
  * @Author: fanT
@@ -18,16 +20,20 @@ public class Test {
         new Thread(() -> {
             OpenOfficeUtil openOfficeUtil = new OpenOfficeUtil();
             logger.info("start to convert ...");
-            openOfficeUtil.convert2Pdf("d:/openoffice/work/test.doc", "d:/openoffice/work/b/test2.pdf");
+            try {
+                openOfficeUtil.convert2Pdf("F:\\tempdir\\convert\\2021\\10\\12\\1.doc", "F:\\tempdir\\convert\\2021\\10\\12\\1.pdf");
+            } catch (ConnectException e) {
+                e.printStackTrace();
+            }
             logger.info("convert success...");
         }, "BB").start();
 
-        new Thread(() -> {
+        /*new Thread(() -> {
             OpenOfficeUtil openOfficeUtil = new OpenOfficeUtil();
             logger.info("start to convert ...");
             openOfficeUtil.convert2Pdf("d:/openoffice/work/test.pptx", "d:/openoffice/work/a/test1.pdf");
             logger.info("convert success...");
-        }, "AA").start();
+        }, "AA").start();*/
 
 
         //PdfBoxUtil util = new PdfBoxUtil();

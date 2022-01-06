@@ -37,7 +37,6 @@
         <pdfbox.version>2.0.24</pdfbox.version>
         <oepnoffice.version>3.0.1</oepnoffice.version>
         <stream.rabbitmq.version>3.1.4</stream.rabbitmq.version>
-        <spring-cloud-stream-binder-rabbit.version>3.1.4</spring-cloud-stream-binder-rabbit.version>
     </properties>
 
     <dependencyManagement>

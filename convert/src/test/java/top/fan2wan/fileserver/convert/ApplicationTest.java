@@ -8,6 +8,8 @@ import top.fan2wan.fileserver.convert.util.OpenOfficeUtil;
 import top.fan2wan.fileserver.oss.dto.OssFileDto;
 import top.fan2wan.fileserver.oss.service.OssService;
 
+import java.net.ConnectException;
+
 /**
  * @Author: fanT
  * @Date: 2021/10/22 13:24
@@ -21,7 +23,7 @@ public class ApplicationTest {
     private static String dir = "d:/openoffice/work/";
 
     @Test
-    public void test() {
+    public void test() throws ConnectException {
         OssFileDto download = new OssFileDto();
         download.setOssFilePath("2021/10/12/1.doc");
         download.setLocalPath(dir + "download.doc");

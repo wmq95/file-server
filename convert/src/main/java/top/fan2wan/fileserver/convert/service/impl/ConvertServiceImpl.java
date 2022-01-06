@@ -19,6 +19,8 @@ import top.fan2wan.fileserver.oss.service.OssService;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
+import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Objects;
 
 /**
@@ -44,7 +46,9 @@ public class ConvertServiceImpl implements IConvertService {
 
     @Override
     public void sendFileCallback(FileCallbackDto fileCallback) {
-        streamBridge.send("", fileCallback);
+        //streamBridge.send("", fileCallback);
+        logger.info("sendFileCallback, fileId was :{}, status was :{},convertedPath was:{}.content length was :{}",
+                fileCallback.getFileId(), fileCallback.getStatus(), fileCallback.getConvertedPath(), fileCallback.getFileContent().length());
     }
 
     @Override
@@ -56,9 +60,8 @@ public class ConvertServiceImpl implements IConvertService {
 
         int lastIndex = file.getOssPath().lastIndexOf(BusinessCons.DOT);
         Preconditions.checkArgument(lastIndex > 0, "invalid path");
-        String fileName = file.getOssPath().substring(0, lastIndex - 1);
-        String fileType = file.getOssPath().substring(lastIndex, file.getOssPath().length() - 1);
-
+        String fileName = file.getOssPath().substring(0, lastIndex);
+        String fileType = file.getOssPath().substring(lastIndex + 1);
 
         boolean isPdf = StrUtil.equals(fileType, BusinessCons.PDF);
         boolean needConverted = isPdf ? true : needConverted(fileType);
@@ -93,7 +96,7 @@ public class ConvertServiceImpl implements IConvertService {
              */
             convertFile2Pdf(localPath, pdfFilePath);
 
-            convertedPath = fileName + BusinessCons.PDF;
+            convertedPath = fileName + BusinessCons.DOT + BusinessCons.PDF;
             ossService.save(OssFileDto.OssFileDtoBuilder.anOssFileDto()
                     .withLocalPath(pdfFilePath)
                     .withOssFilePath(convertedPath).build());
@@ -117,12 +120,20 @@ public class ConvertServiceImpl implements IConvertService {
 
     private void convertFile2Pdf(String localPath, String pdfFilePath) {
         OpenOfficeUtil util = new OpenOfficeUtil();
-        util.convert2Pdf(localPath, pdfFilePath);
+        try {
+            util.convert2Pdf(localPath, pdfFilePath);
+        } catch (ConnectException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String readPdfContent(String pdfFilePath) {
         PdfBoxUtil pdfBoxUtil = new PdfBoxUtil(localFileDir);
-        return pdfBoxUtil.readPdf(pdfFilePath);
+        try {
+            return pdfBoxUtil.readPdf(pdfFilePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

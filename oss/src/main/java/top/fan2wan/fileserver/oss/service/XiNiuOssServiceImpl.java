@@ -60,7 +60,7 @@ public class XiNiuOssServiceImpl implements OssService {
             response = uploadManager.put(localFilePath, ossFilePth, upToken);
             //解析上传成功的结果
             DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
-            logger.info("save response was :{}", putRet);
+            logger.info("save success, key was :{},hash was:{}", putRet.key, putRet.hash);
         } catch (QiniuException e) {
             logger.error("fail to save oss,error was \n", e);
             throw new RuntimeException(e.getMessage());

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * @Author: fanT
@@ -44,12 +45,13 @@ public class PdfBoxUtil {
      *
      * @param path 文件路径
      * @return text内同
+     * @throws IOException
      */
-    public String readPdf(String path) {
+    public String readPdf(String path) throws IOException {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(path), " path can not be null");
-        String content = null;
+        PDDocument document = null;
         try {
-            PDDocument document = PDDocument.load(new File(path), setting);
+            document = PDDocument.load(new File(path), setting);
             // 读文本内容
             PDFTextStripper stripper = new PDFTextStripper();
             // 设置按顺序输出
@@ -57,11 +59,12 @@ public class PdfBoxUtil {
             stripper.setStartPage(0);
             stripper.setEndPage(document.getNumberOfPages());
             //获取内容
-            content = stripper.getText(document);
-        } catch (IOException e) {
-            logger.error("fail to read pdf file ,error was\n", e);
+            return stripper.getText(document);
+        } finally {
+            if (Objects.nonNull(document)) {
+                document.close();
+            }
         }
-        return content;
     }
 
     private MemoryUsageSetting getMemorySetting() {

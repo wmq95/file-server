@@ -37,7 +37,7 @@ public class OssTest {
     @Value("${oss.domain}")
     private String domain;
 
-    private String localFilePath = "d:/aspose.pdf";
+    private String localFilePath = "d:/范涛.doc";
 
     @Test
     public void testDownload() throws IOException {
@@ -67,7 +67,7 @@ public class OssTest {
 
         //默认不指定key的情况下，以文件内容的hash值作为文件名
         // 空间不支持目录 但是可以通过文件名称达到虚拟目录得目的
-        String uploadFileName = "2021/10/12/2.pdf";
+        String uploadFileName = "2021/10/12/2.doc";
 
         Auth auth = Auth.create(accessKey, secretKey);
         String upToken = auth.uploadToken(bucket);
