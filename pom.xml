@@ -37,6 +37,7 @@
         <pdfbox.version>2.0.24</pdfbox.version>
         <oepnoffice.version>3.0.1</oepnoffice.version>
         <stream.rabbitmq.version>3.1.4</stream.rabbitmq.version>
+        <tika.version>1.24.1</tika.version>
     </properties>
 
     <dependencyManagement>
@@ -142,6 +143,12 @@
                 <groupId>org.openoffice</groupId>
                 <artifactId>unoil</artifactId>
                 <version>${oepnoffice.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-parsers</artifactId>
+                <version>${tika.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

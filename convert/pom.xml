@@ -101,6 +101,18 @@
             <groupId>top.fan2wan</groupId>
             <artifactId>file-server.oss</artifactId>
             <version>${oss.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-parsers -->
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
         </dependency>
     </dependencies>
 </project>

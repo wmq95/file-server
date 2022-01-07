@@ -13,7 +13,5 @@ public interface BusinessCons {
 
     String DOCX = "docx";
 
-    String CONVERTED_SUCCESS = "CONVERTED_SUCCESS";
 
-    String NO_REQUIRED = "NO_REQUIRED";
 }

@@ -10,8 +10,9 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import top.fan2wan.fileserver.convert.cons.BusinessCons;
 import top.fan2wan.fileserver.convert.service.IConvertService;
+import top.fan2wan.fileserver.convert.util.FutureUtil;
 import top.fan2wan.fileserver.convert.util.OpenOfficeUtil;
-import top.fan2wan.fileserver.convert.util.PdfBoxUtil;
+import top.fan2wan.fileserver.convert.util.TiKaUtil;
 import top.fan2wan.fileserver.mq.dto.FileCallbackDto;
 import top.fan2wan.fileserver.mq.dto.FileDto;
 import top.fan2wan.fileserver.oss.dto.OssFileDto;
@@ -19,9 +20,8 @@ import top.fan2wan.fileserver.oss.service.OssService;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
-import java.io.IOException;
-import java.net.ConnectException;
 import java.util.Objects;
+import java.util.concurrent.*;
 
 /**
  * @Author: fanT
@@ -43,6 +43,8 @@ public class ConvertServiceImpl implements IConvertService {
     private static Logger logger = LoggerFactory.getLogger(IConvertService.class);
     @Value("${file.tempDir}")
     private String localFileDir;
+    private Executor readContentExecutor = new ThreadPoolExecutor(2, 5, 1, TimeUnit.MINUTES,
+            new ArrayBlockingQueue<>(5));
 
     @Override
     public void sendFileCallback(FileCallbackDto fileCallback) {
@@ -60,7 +62,6 @@ public class ConvertServiceImpl implements IConvertService {
 
         int lastIndex = file.getOssPath().lastIndexOf(BusinessCons.DOT);
         Preconditions.checkArgument(lastIndex > 0, "invalid path");
-        String fileName = file.getOssPath().substring(0, lastIndex);
         String fileType = file.getOssPath().substring(lastIndex + 1);
 
         boolean isPdf = StrUtil.equals(fileType, BusinessCons.PDF);
@@ -71,7 +72,7 @@ public class ConvertServiceImpl implements IConvertService {
             sendFileCallback(FileCallbackDto.FileCallbackDtoBuilder.aFileCallbackDto()
                     .withFileId(file.getFileId())
                     .withConvertedPath(file.getOssPath())
-                    .withStatus(BusinessCons.NO_REQUIRED).build());
+                    .withStatus(NO_REQUIRED).build());
             return;
         }
 
@@ -82,60 +83,56 @@ public class ConvertServiceImpl implements IConvertService {
         ossService.download(OssFileDto.OssFileDtoBuilder.anOssFileDto()
                 .withOssFilePath(file.getOssPath()).withLocalPath(localPath).build());
 
+        CompletableFuture<String> contentFuture = CompletableFuture
+                .supplyAsync(() -> parseContent(localPath), readContentExecutor)
+                .exceptionally((e) -> null);
 
-        String pdfFilePath;
-        String convertedPath;
-        if (isPdf) {
-            pdfFilePath = localPath;
-            convertedPath = file.getOssPath();
-        } else {
-            pdfFilePath = localPath.replace(fileType, BusinessCons.PDF);
-
-            /**
-             * 文件转换
-             */
-            convertFile2Pdf(localPath, pdfFilePath);
-
-            convertedPath = fileName + BusinessCons.DOT + BusinessCons.PDF;
-            ossService.save(OssFileDto.OssFileDtoBuilder.anOssFileDto()
-                    .withLocalPath(pdfFilePath)
-                    .withOssFilePath(convertedPath).build());
-        }
-
-        /**
-         * 读取pdf 内容
-         */
-        String content = readPdfContent(pdfFilePath);
+        String convertedPath = isPdf ? file.getOssPath() : convertAndUploadPdf(localPath, fileType, file.getOssPath());
 
         /**
          * 发送回调
          */
         sendFileCallback(FileCallbackDto.FileCallbackDtoBuilder.aFileCallbackDto()
-                .withStatus(BusinessCons.CONVERTED_SUCCESS).withConvertedPath(convertedPath)
-                .withFileId(file.getFileId()).withFileContent(content).build());
+                .withStatus(CONVERTED_SUCCESS).withConvertedPath(convertedPath).withFileId(file.getFileId())
+                .withFileContent(FutureUtil.getAsStringOrElse(contentFuture, null))
+                .build());
+
         /**
          * 清理工作目录...
          */
     }
 
-    private void convertFile2Pdf(String localPath, String pdfFilePath) {
+    private String convertAndUploadPdf(String localPath, String fileType, String ossPath) {
+        String pdfFilePath = localPath.replace(fileType, BusinessCons.PDF);
+        if (convertFile2Pdf(localPath, pdfFilePath)) {
+            String pdfOssPath = ossPath.replace(fileType, BusinessCons.PDF);
+            ossService.save(OssFileDto.OssFileDtoBuilder.anOssFileDto()
+                    .withLocalPath(pdfFilePath)
+                    .withOssFilePath(pdfOssPath)
+                    .build());
+            return pdfOssPath;
+        }
+        return null;
+    }
+
+    private String parseContent(String localPath) {
+        try {
+            return TiKaUtil.parseContent(localPath);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean convertFile2Pdf(String localPath, String pdfFilePath) {
         OpenOfficeUtil util = new OpenOfficeUtil();
         try {
             util.convert2Pdf(localPath, pdfFilePath);
-        } catch (ConnectException e) {
-            throw new RuntimeException(e);
+            return true;
+        } catch (Exception e) {
+            logger.error("failed to convertFile2Pdf,error was :{}", e);
+            return false;
         }
     }
-
-    private String readPdfContent(String pdfFilePath) {
-        PdfBoxUtil pdfBoxUtil = new PdfBoxUtil(localFileDir);
-        try {
-            return pdfBoxUtil.readPdf(pdfFilePath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     /**
      * 是否需要转换  根据文件类型判断
