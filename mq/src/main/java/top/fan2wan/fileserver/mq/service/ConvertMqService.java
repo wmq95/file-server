@@ -17,6 +17,11 @@ public interface ConvertMqService extends Consumer<FileDto> {
     String CONVERTED_SUCCESS = "CONVERTED_SUCCESS";
 
     /**
+     * 转换失败
+     */
+    String CONVERTED_FAILED = "CONVERTED_FAILED";
+
+    /**
      * 无需转换
      */
     String NO_REQUIRED = "NO_REQUIRED";

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--需要注意 添加的是service 接口 不是具体的实现类-->
+    <logger name="top.fan2wan.fileserver.convert.service.IConvertService" level="DEBUG"/>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <logger name="org.springframework.web" level="INFO"/>
+</configuration>

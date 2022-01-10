@@ -10,7 +10,6 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import top.fan2wan.fileserver.convert.cons.BusinessCons;
 import top.fan2wan.fileserver.convert.service.IConvertService;
-import top.fan2wan.fileserver.convert.util.FutureUtil;
 import top.fan2wan.fileserver.convert.util.OpenOfficeUtil;
 import top.fan2wan.fileserver.convert.util.TiKaUtil;
 import top.fan2wan.fileserver.mq.dto.FileCallbackDto;
@@ -28,7 +27,7 @@ import java.util.concurrent.*;
  * @Date: 2021/10/22 13:22
  * @Description: impl for convert
  */
-@Service
+@Service("convertService")
 public class ConvertServiceImpl implements IConvertService {
 
     private final StreamBridge streamBridge;
@@ -48,15 +47,20 @@ public class ConvertServiceImpl implements IConvertService {
 
     @Override
     public void sendFileCallback(FileCallbackDto fileCallback) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("sendFileCallback, fileId was :{}, status was :{},convertedPath was:{}",
+                    fileCallback.getFileId(), fileCallback.getStatus(), fileCallback.getConvertedPath());
+        }
         //streamBridge.send("", fileCallback);
-        logger.info("sendFileCallback, fileId was :{}, status was :{},convertedPath was:{}.content length was :{}",
-                fileCallback.getFileId(), fileCallback.getStatus(), fileCallback.getConvertedPath(), fileCallback.getFileContent().length());
     }
 
     @Override
     public void accept(FileDto file) {
 
-        logger.info("receive file was :{}", file);
+        if (logger.isDebugEnabled()) {
+            logger.debug("receive file was :{}", file);
+        }
+
         Preconditions.checkArgument(!Strings.isNullOrEmpty(file.getOssPath()), " path can not be empty");
         Preconditions.checkArgument(Objects.nonNull(file.getFileId()), "fileId can not be null");
 
@@ -69,10 +73,7 @@ public class ConvertServiceImpl implements IConvertService {
 
         if (!isPdf && !needConverted) {
             // 无需转换  并且不是pdf  直接返回
-            sendFileCallback(FileCallbackDto.FileCallbackDtoBuilder.aFileCallbackDto()
-                    .withFileId(file.getFileId())
-                    .withConvertedPath(file.getOssPath())
-                    .withStatus(NO_REQUIRED).build());
+            sendFileCallback(buildDto(file.getFileId(), file.getOssPath(), NO_REQUIRED, null));
             return;
         }
 
@@ -84,35 +85,54 @@ public class ConvertServiceImpl implements IConvertService {
                 .withOssFilePath(file.getOssPath()).withLocalPath(localPath).build());
 
         CompletableFuture<String> contentFuture = CompletableFuture
-                .supplyAsync(() -> parseContent(localPath), readContentExecutor)
-                .exceptionally((e) -> null);
+                .supplyAsync(() -> parseContent(localPath), readContentExecutor);
 
-        String convertedPath = isPdf ? file.getOssPath() : convertAndUploadPdf(localPath, fileType, file.getOssPath());
+        String convertedPath;
+        try {
+            convertedPath = isPdf ? file.getOssPath() : convertAndUploadPdf(localPath, fileType, file.getOssPath());
+        } catch (Exception e) {
+            logger.error(" failed to convert file,error was", e);
+            sendFileCallback(buildDto(file.getFileId(), null, CONVERTED_FAILED, getContent(contentFuture)));
+            return;
+        }
 
         /**
          * 发送回调
          */
-        sendFileCallback(FileCallbackDto.FileCallbackDtoBuilder.aFileCallbackDto()
-                .withStatus(CONVERTED_SUCCESS).withConvertedPath(convertedPath).withFileId(file.getFileId())
-                .withFileContent(FutureUtil.getAsStringOrElse(contentFuture, null))
-                .build());
+        sendFileCallback(buildDto(file.getFileId(),convertedPath,CONVERTED_SUCCESS,getContent(contentFuture)));
 
         /**
          * 清理工作目录...
          */
     }
 
-    private String convertAndUploadPdf(String localPath, String fileType, String ossPath) {
-        String pdfFilePath = localPath.replace(fileType, BusinessCons.PDF);
-        if (convertFile2Pdf(localPath, pdfFilePath)) {
-            String pdfOssPath = ossPath.replace(fileType, BusinessCons.PDF);
-            ossService.save(OssFileDto.OssFileDtoBuilder.anOssFileDto()
-                    .withLocalPath(pdfFilePath)
-                    .withOssFilePath(pdfOssPath)
-                    .build());
-            return pdfOssPath;
+    private String getContent(CompletableFuture<String> contentFuture) {
+        try {
+            return contentFuture.get(3, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            logger.error("failed to parseContent,error was:", e);
         }
         return null;
+    }
+
+    private FileCallbackDto buildDto(Long fileId, String convertedPath, String status, String content) {
+        return FileCallbackDto.FileCallbackDtoBuilder.aFileCallbackDto()
+                .withFileId(fileId)
+                .withConvertedPath(convertedPath)
+                .withFileContent(content)
+                .withStatus(status).build();
+    }
+
+    private String convertAndUploadPdf(String localPath, String fileType, String ossPath) throws Exception {
+        String pdfFilePath = localPath.replace(fileType, BusinessCons.PDF);
+        convertFile2Pdf(localPath, pdfFilePath);
+
+        String pdfOssPath = ossPath.replace(fileType, BusinessCons.PDF);
+        ossService.save(OssFileDto.OssFileDtoBuilder.anOssFileDto()
+                .withLocalPath(pdfFilePath)
+                .withOssFilePath(pdfOssPath)
+                .build());
+        return pdfOssPath;
     }
 
     private String parseContent(String localPath) {
@@ -123,15 +143,11 @@ public class ConvertServiceImpl implements IConvertService {
         }
     }
 
-    private boolean convertFile2Pdf(String localPath, String pdfFilePath) {
+    private boolean convertFile2Pdf(String localPath, String pdfFilePath) throws Exception {
         OpenOfficeUtil util = new OpenOfficeUtil();
-        try {
-            util.convert2Pdf(localPath, pdfFilePath);
-            return true;
-        } catch (Exception e) {
-            logger.error("failed to convertFile2Pdf,error was :{}", e);
-            return false;
-        }
+        util.convert2Pdf(localPath, pdfFilePath);
+        return true;
+
     }
 
     /**
