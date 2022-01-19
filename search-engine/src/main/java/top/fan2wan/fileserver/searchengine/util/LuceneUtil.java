@@ -7,10 +7,7 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -82,6 +79,10 @@ public class LuceneUtil {
         return this.searcher.search(query, num, sort);
     }
 
+    public TopDocs searchWithPage(Query query, int pageSize, int previous, Sort sort) throws IOException {
+
+        return this.searcher.searchAfter(new ScoreDoc(previous, 1f), query, pageSize, sort);
+    }
 
     public Document searchByDocId(int doc) throws IOException {
         return this.searcher.doc(doc);
@@ -90,5 +91,9 @@ public class LuceneUtil {
     public void deleteAll() throws IOException {
         this.writer.deleteAll();
         this.writer.commit();
+    }
+
+    public long deleteByQuery(Query query) throws IOException {
+        return this.writer.deleteDocuments(query);
     }
 }

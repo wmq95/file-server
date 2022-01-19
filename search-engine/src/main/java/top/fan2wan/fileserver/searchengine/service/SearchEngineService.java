@@ -1,6 +1,9 @@
 package top.fan2wan.fileserver.searchengine.service;
 
 import top.fan2wan.fileserver.searchengine.dto.IFileIndex;
+import top.fan2wan.fileserver.searchengine.dto.ISearchIndex;
+
+import java.util.List;
 
 /**
  * @Author: fanT
@@ -15,5 +18,21 @@ public interface SearchEngineService {
      * @param fileIndex dto
      * @return boolean
      */
-    boolean indexFile(IFileIndex fileIndex);
+    boolean saveIndex(IFileIndex fileIndex);
+
+    /**
+     * 根据文件id 删除索引文件
+     *
+     * @param id 文件id
+     * @return boolean
+     */
+    boolean deleteIndexById(Long id);
+
+    /**
+     * 查询索引
+     *
+     * @param searchIndex 查询参数
+     * @return List<IFileIndex>
+     */
+    List<IFileIndex> searchIndex(ISearchIndex searchIndex);
 }

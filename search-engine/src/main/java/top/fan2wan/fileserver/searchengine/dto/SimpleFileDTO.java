@@ -1,9 +1,12 @@
 package top.fan2wan.fileserver.searchengine.dto;
 
+import java.util.StringJoiner;
+
 /**
  * @Author: fanT
  * @Date: 2022/1/18 9:22
  * @Description: dto for fileIndex
+ * toString 没有打印内容
  */
 public class SimpleFileDTO implements IFileIndex {
 
@@ -119,5 +122,17 @@ public class SimpleFileDTO implements IFileIndex {
             simpleFileDTO.name = this.name;
             return simpleFileDTO;
         }
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", SimpleFileDTO.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("path='" + path + "'")
+                .add("name='" + name + "'")
+                .add("createTime=" + createTime)
+                .add("size=" + size)
+                .add("type='" + type + "'")
+                .toString();
     }
 }

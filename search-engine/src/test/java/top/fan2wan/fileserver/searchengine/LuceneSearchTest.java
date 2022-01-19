@@ -1,8 +1,7 @@
 package top.fan2wan.fileserver.searchengine;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.LongPoint;
-import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import top.fan2wan.fileserver.searchengine.util.LuceneUtil;
 
@@ -14,11 +13,17 @@ import java.io.IOException;
  * @Description:
  */
 public class LuceneSearchTest {
-    private static LuceneUtil searchUtil = new LuceneUtil("F:\\tempdir\\lucene");
+    private static LuceneUtil searchUtil = new LuceneUtil("F:\\tempdir\\lucene\\file");
 
     public static void main(String[] args) {
         //search_test(new TermQuery(new Term("name", "无锡")));
-        search_test(LongPoint.newRangeQuery("id", 0, 100));
+        //search_test(LongPoint.newRangeQuery("_id", 0, 1222222222L));
+        BooleanQuery.Builder builder = new BooleanQuery.Builder();
+
+        builder
+                //.add(new TermQuery(new Term("name", "测试")), BooleanClause.Occur.MUST)
+                .add(new TermQuery(new Term("content", "一个")), BooleanClause.Occur.MUST);
+        search_test(builder.build());
     }
 
     public static void search_test(Query query) {
@@ -26,7 +31,7 @@ public class LuceneSearchTest {
         try {
             //TopDocs docs = searchUtil.search(query, 10);
             TopDocs docs = searchUtil.search(query, 10, new Sort(
-                    new SortField("createTime", SortField.Type.LONG, true)));
+                    new SortField("_createTime", SortField.Type.LONG, false)));
             print(docs);
         } catch (IOException e) {
             e.printStackTrace();
@@ -45,10 +50,7 @@ public class LuceneSearchTest {
             System.out.println(doc.get("createTime"));
             System.out.println(doc.get("size"));
             System.out.println(doc.get("type"));
-
-            System.out.println("size ---------");
-            IndexableField size = doc.getField("size");
-            System.out.println(size.numericValue().longValue());
+            System.out.println("==============end======");
         }
     }
 }
