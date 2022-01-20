@@ -1,7 +1,9 @@
 package top.fan2wan.fileserver.searchengine;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -12,7 +14,11 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Attribute;
+import org.wltea.analyzer.lucene.IKAnalyzer;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Paths;
 
 /**
@@ -21,6 +27,25 @@ import java.nio.file.Paths;
  * @Description:
  */
 public class Searcher {
+
+    public static void main(String[] args) throws IOException {
+        Analyzer analyzer = new IKAnalyzer();
+        printAnalyzer(analyzer, "中华人民共和国简称中国，是一个有13亿人口的国家");
+    }
+
+
+    public static void printAnalyzer(Analyzer analyzer,String str) throws IOException {
+        StringReader reader = new StringReader(str);
+        TokenStream toStream = analyzer.tokenStream(str, reader);
+        toStream.reset();
+        CharTermAttribute teAttribute = toStream.getAttribute(CharTermAttribute.class);
+        System.out.println("分词结果：");
+        while (toStream.incrementToken()) {
+            System.out.print(teAttribute.toString() + "|");
+        }
+        System.out.println("\n");
+        analyzer.close();
+    }
 
     public static void search(String indexDir, String q) throws Exception {
 
