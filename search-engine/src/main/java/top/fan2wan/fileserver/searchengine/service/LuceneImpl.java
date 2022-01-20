@@ -9,7 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.fan2wan.fileserver.searchengine.dto.IFileIndex;
 import top.fan2wan.fileserver.searchengine.dto.ISearchIndex;
-import top.fan2wan.fileserver.searchengine.dto.SimpleFileDTO;
+import top.fan2wan.fileserver.searchengine.dto.SimpleFileDto;
+import top.fan2wan.fileserver.searchengine.util.IfHelper;
 import top.fan2wan.fileserver.searchengine.util.LuceneUtil;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class LuceneImpl implements SearchEngineService {
     private final static String SIZE = "size";
     private final static String TYPE = "type";
     private final static String PREFIX = "_";
-    private final static IFileIndex EMPTY_FILE = SimpleFileDTO.FileIndexDtoBuilder.aFileIndexDto().build();
+    private final static IFileIndex EMPTY_FILE = SimpleFileDto.FileIndexDtoBuilder.aFileIndexDto().build();
     private final static int MAX_SEARCH_NUMBER = 1000;
 
     @Override
@@ -75,26 +76,21 @@ public class LuceneImpl implements SearchEngineService {
 
     @Override
     public List<IFileIndex> searchIndex(ISearchIndex searchIndex) {
-        Assert.isTrue(searchIndex.getSearchNumber() < MAX_SEARCH_NUMBER, "invalid searchNumber");
+        Assert.checkBetween(searchIndex.getSearchNumber(), 0, MAX_SEARCH_NUMBER);
+
         BooleanClause.Occur occur = searchIndex.isAllMatch() ? BooleanClause.Occur.MUST : BooleanClause.Occur.SHOULD;
-
         BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
-        if (StrUtil.isNotBlank(searchIndex.getContent())) {
-            queryBuilder.add(new TermQuery(new Term(CONTENT, searchIndex.getContent())), occur);
-        }
 
-        if (StrUtil.isNotBlank(searchIndex.getName())) {
-            queryBuilder.add(new TermQuery(new Term(NAME, searchIndex.getName())), occur);
-        }
+        IfHelper.isNotBlank(searchIndex.getContent(), (content) -> queryBuilder.add(new TermQuery(new Term(CONTENT, content)), occur));
+        IfHelper.isNotBlank(searchIndex.getName(), (name) -> queryBuilder.add(new TermQuery(new Term(NAME, name)), occur));
+        IfHelper.isNotBlank(searchIndex.getType(), (type) -> queryBuilder.add(new TermQuery(new Term(TYPE, type)), occur));
 
-        if (StrUtil.isNotBlank(searchIndex.getType())) {
-            queryBuilder.add(new TermQuery(new Term(TYPE, searchIndex.getType())), occur);
-        }
         /**
          * 排序字段 最后需要加上前缀去查询
          */
         String orderBy = StrUtil.isNotBlank(searchIndex.getOrderBy()) ? searchIndex.getOrderBy() : CREATE_TIME;
         orderBy += PREFIX;
+
         List<IFileIndex> res = new LinkedList<>();
         try {
             TopDocs search = luceneUtil.search(queryBuilder.build(), searchIndex.getSearchNumber(),
@@ -113,7 +109,7 @@ public class LuceneImpl implements SearchEngineService {
 
         try {
             Document document = luceneUtil.searchByDocId(scoreDoc.doc);
-            return SimpleFileDTO.FileIndexDtoBuilder.aFileIndexDto()
+            return SimpleFileDto.FileIndexDtoBuilder.aFileIndexDto()
                     .withId(document.getField(ID).numericValue().longValue())
                     .withType(document.get(TYPE))
                     .withSize(document.getField(SIZE).numericValue().longValue())

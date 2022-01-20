@@ -1,7 +1,8 @@
 package top.fan2wan.fileserver.searchengine;
 
 import top.fan2wan.fileserver.searchengine.dto.IFileIndex;
-import top.fan2wan.fileserver.searchengine.dto.SimpleFileDTO;
+import top.fan2wan.fileserver.searchengine.dto.SearchIndexDto;
+import top.fan2wan.fileserver.searchengine.dto.SimpleFileDto;
 import top.fan2wan.fileserver.searchengine.service.LuceneImpl;
 import top.fan2wan.fileserver.searchengine.service.SearchEngineService;
 import top.fan2wan.fileserver.searchengine.util.LuceneUtil;
@@ -23,12 +24,21 @@ public class LuceneServiceTest {
         LuceneUtil util = new LuceneUtil("F:\\tempdir\\lucene\\file");
 
         SearchEngineService service = new LuceneImpl(util);
-        service.saveIndex(buildFile());
-        service.saveIndex(buildFile2());
+        /*service.saveIndex(buildFile());
+        service.saveIndex(buildFile2());*/
+
+        System.out.println(service.searchIndex(buildSearchIndex()));
+    }
+
+    private static SearchIndexDto buildSearchIndex() {
+        return SearchIndexDto.SearchIndexDtoBuilder.aSearchIndexDto()
+                .withName("2")
+                .withSearchNumber(100)
+                .build();
     }
 
     private static IFileIndex buildFile() {
-        return SimpleFileDTO.FileIndexDtoBuilder.aFileIndexDto()
+        return SimpleFileDto.FileIndexDtoBuilder.aFileIndexDto()
                 .withId(123456L)
                 .withContent("呵呵 这是个测试的文件")
                 .withName("测试文件")
@@ -40,7 +50,7 @@ public class LuceneServiceTest {
     }
 
     private static IFileIndex buildFile2() {
-        return SimpleFileDTO.FileIndexDtoBuilder.aFileIndexDto()
+        return SimpleFileDto.FileIndexDtoBuilder.aFileIndexDto()
                 .withId(12325L)
                 .withContent("这又是一个测试文件啊")
                 .withName("测试文件2")
