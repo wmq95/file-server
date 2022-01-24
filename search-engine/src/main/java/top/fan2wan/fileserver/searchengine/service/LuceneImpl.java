@@ -4,7 +4,6 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.slf4j.Logger;
@@ -15,6 +14,7 @@ import top.fan2wan.fileserver.searchengine.dto.ISearchIndex;
 import top.fan2wan.fileserver.searchengine.dto.SimpleFileDto;
 import top.fan2wan.fileserver.searchengine.util.IfHelper;
 import top.fan2wan.fileserver.searchengine.util.LuceneUtil;
+import top.fan2wan.fileserver.searchengine.util.TryHelper;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -54,7 +54,6 @@ public class LuceneImpl implements SearchEngineService {
     private final static String SIZE = "size";
     private final static String TYPE = "type";
     private final static String PREFIX = "_";
-    private final static IFileIndex EMPTY_FILE = SimpleFileDto.FileIndexDtoBuilder.aFileIndexDto().build();
     private final static int MAX_SEARCH_NUMBER = 1000;
 
     @Override
@@ -66,23 +65,14 @@ public class LuceneImpl implements SearchEngineService {
         Assert.notBlank(fileIndex.getType(), "type can not be empty");
         Assert.notNull(fileIndex.getCreateTime(), "createTime can not be null");
 
-        try {
-            return luceneUtil.save(getDocument(fileIndex));
-        } catch (IOException e) {
-            logger.error("failed to indexFile, error was:", e);
-            return false;
-        }
+        return TryHelper.function(luceneUtil::save, getDocument(fileIndex));
     }
 
     @Override
     public boolean deleteIndexById(Long id) {
         Assert.notNull(id);
-        try {
-            luceneUtil.deleteByQuery(LongPoint.newExactQuery(PREFIX + ID, id));
-        } catch (IOException e) {
-            logger.error("failed to delete index, error was: {}", e);
-        }
-        return false;
+        TryHelper.function(luceneUtil::deleteByQuery, LongPoint.newExactQuery(PREFIX + ID, id));
+        return true;
     }
 
     @Override
@@ -120,28 +110,22 @@ public class LuceneImpl implements SearchEngineService {
 
     private Query queryWithTokenized(String field, String content) {
         QueryParser queryParser = new QueryParser(field, new IKAnalyzer());
-        try {
-            return queryParser.parse(content);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+
+        return TryHelper.function(queryParser::parse, content);
     }
 
     private IFileIndex transform(ScoreDoc scoreDoc) {
+        Document document = TryHelper.function(luceneUtil::searchByDocId, scoreDoc.doc);
 
-        try {
-            Document document = luceneUtil.searchByDocId(scoreDoc.doc);
-            return SimpleFileDto.FileIndexDtoBuilder.aFileIndexDto()
-                    .withId(document.getField(ID).numericValue().longValue())
-                    .withType(document.get(TYPE))
-                    .withSize(document.getField(SIZE).numericValue().longValue())
-                    .withCreateTime(document.getField(CREATE_TIME).numericValue().longValue())
-                    .withName(document.get(NAME))
-                    .withPath(document.get(PATH))
-                    .build();
-        } catch (IOException e) {
-            return EMPTY_FILE;
-        }
+        return SimpleFileDto.FileIndexDtoBuilder.aFileIndexDto()
+                .withId(document.getField(ID).numericValue().longValue())
+                .withType(document.get(TYPE))
+                .withSize(document.getField(SIZE).numericValue().longValue())
+                .withCreateTime(document.getField(CREATE_TIME).numericValue().longValue())
+                .withName(document.get(NAME))
+                .withPath(document.get(PATH))
+                .build();
+
     }
 
     private Document getDocument(IFileIndex fileIndex) {
