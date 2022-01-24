@@ -2,6 +2,7 @@ package top.fan2wan.fileserver.searchengine.service;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
+import com.sun.istack.internal.NotNull;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -69,8 +70,7 @@ public class LuceneImpl implements SearchEngineService {
     }
 
     @Override
-    public boolean deleteIndexById(Long id) {
-        Assert.notNull(id);
+    public boolean deleteIndexById(@NotNull Long id) {
         TryHelper.function(luceneUtil::deleteByQuery, LongPoint.newExactQuery(PREFIX + ID, id));
         return true;
     }
@@ -108,6 +108,33 @@ public class LuceneImpl implements SearchEngineService {
         return res;
     }
 
+    @Override
+    public IFileIndex getIndexById(@NotNull Long id) {
+        Document document = searchDocumentById(id);
+        Assert.notNull(document, "file not exist");
+        return getIFileIndex(document);
+    }
+
+    @Override
+    public boolean updateIndex(IFileIndex updateIndex) {
+        Assert.notNull(updateIndex.getId());
+        Document document = searchDocumentById(updateIndex.getId());
+        Assert.notNull(document, "file not exist");
+
+        /**
+         * 更新本质就是先删除 然后新增
+         */
+        deleteIndexById(updateIndex.getId());
+        saveIndex(updateIndex);
+        return false;
+    }
+
+    private Document searchDocumentById(Long id) {
+        TopDocs docs = TryHelper.function(luceneUtil::search, LongPoint.newExactQuery(PREFIX + ID, id));
+        return docs.scoreDocs.length == 1 ? TryHelper.function(luceneUtil::searchByDocId, docs.scoreDocs[0].doc)
+                : null;
+    }
+
     private Query queryWithTokenized(String field, String content) {
         QueryParser queryParser = new QueryParser(field, new IKAnalyzer());
 
@@ -117,6 +144,11 @@ public class LuceneImpl implements SearchEngineService {
     private IFileIndex transform(ScoreDoc scoreDoc) {
         Document document = TryHelper.function(luceneUtil::searchByDocId, scoreDoc.doc);
 
+        return getIFileIndex(document);
+
+    }
+
+    private SimpleFileDto getIFileIndex(Document document) {
         return SimpleFileDto.FileIndexDtoBuilder.aFileIndexDto()
                 .withId(document.getField(ID).numericValue().longValue())
                 .withType(document.get(TYPE))
@@ -125,7 +157,6 @@ public class LuceneImpl implements SearchEngineService {
                 .withName(document.get(NAME))
                 .withPath(document.get(PATH))
                 .build();
-
     }
 
     private Document getDocument(IFileIndex fileIndex) {

@@ -35,4 +35,21 @@ public interface SearchEngineService {
      * @return List<IFileIndex>
      */
     List<IFileIndex> searchIndex(ISearchIndex searchIndex);
+
+    /**
+     * 根据文件id 获取索引
+     * 注意 这儿没有返回内容
+     *
+     * @param id id
+     * @return IFileIndex
+     */
+    IFileIndex getIndexById(Long id);
+
+    /**
+     * 更新索引
+     *
+     * @param updateIndex 索引更新
+     * @return boolean
+     */
+    boolean updateIndex(IFileIndex updateIndex);
 }
