@@ -2,7 +2,10 @@ package top.fan2wan.fileserver.searchengine;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
+import org.wltea.analyzer.lucene.IKAnalyzer;
 import top.fan2wan.fileserver.searchengine.util.LuceneUtil;
 
 import java.io.IOException;
@@ -15,14 +18,19 @@ import java.io.IOException;
 public class LuceneSearchTest {
     private static LuceneUtil searchUtil = new LuceneUtil("F:\\tempdir\\lucene\\file");
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         //search_test(new TermQuery(new Term("name", "无锡")));
         //search_test(LongPoint.newRangeQuery("_id", 0, 1222222222L));
+
+        QueryParser queryParser = new QueryParser("content", new IKAnalyzer());
+
         BooleanQuery.Builder builder = new BooleanQuery.Builder();
 
         builder
+                .add(new TermQuery(new Term("businessType", "china")), BooleanClause.Occur.MUST)
+                //.add(queryParser.parse("中国"),BooleanClause.Occur.SHOULD)
                 //.add(new TermQuery(new Term("name", "测试")), BooleanClause.Occur.MUST)
-                .add(new TermQuery(new Term("content", "一个")), BooleanClause.Occur.MUST);
+        ;
         search_test(builder.build());
     }
 
@@ -50,7 +58,11 @@ public class LuceneSearchTest {
             System.out.println(doc.get("createTime"));
             System.out.println(doc.get("size"));
             System.out.println(doc.get("type"));
+            System.out.println(doc.get("businessType"));
             System.out.println("==============end======");
+            /*doc.getFields().forEach(e -> {
+                System.out.println(e.name());
+            });*/
         }
     }
 }

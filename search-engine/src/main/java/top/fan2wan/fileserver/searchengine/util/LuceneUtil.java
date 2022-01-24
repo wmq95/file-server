@@ -1,7 +1,6 @@
 package top.fan2wan.fileserver.searchengine.util;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -10,6 +9,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -53,7 +53,7 @@ public class LuceneUtil {
 
     private void initWriter() throws IOException {
         Directory dir = FSDirectory.open(Paths.get(indexDir));
-        Analyzer analyzer = new SmartChineseAnalyzer();
+        Analyzer analyzer = new IKAnalyzer();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         writer = new IndexWriter(dir, config);
         /**
