@@ -1,4 +1,4 @@
-package top.fan2wan.fileserver.searchengine.util;
+package top.fan2wan.fileserver.common.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

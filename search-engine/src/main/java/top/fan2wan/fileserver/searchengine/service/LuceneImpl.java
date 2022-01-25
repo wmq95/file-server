@@ -2,7 +2,6 @@ package top.fan2wan.fileserver.searchengine.service;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
-import com.sun.istack.internal.NotNull;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -10,12 +9,12 @@ import org.apache.lucene.search.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wltea.analyzer.lucene.IKAnalyzer;
+import top.fan2wan.fileserver.common.util.IfHelper;
+import top.fan2wan.fileserver.common.util.TryHelper;
 import top.fan2wan.fileserver.searchengine.dto.IFileIndex;
 import top.fan2wan.fileserver.searchengine.dto.ISearchIndex;
-import top.fan2wan.fileserver.searchengine.dto.SimpleFileDto;
-import top.fan2wan.fileserver.searchengine.util.IfHelper;
+import top.fan2wan.fileserver.searchengine.dto.LuceneFileIndexDto;
 import top.fan2wan.fileserver.searchengine.util.LuceneUtil;
-import top.fan2wan.fileserver.searchengine.util.TryHelper;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -70,7 +69,8 @@ public class LuceneImpl implements SearchEngineService {
     }
 
     @Override
-    public boolean deleteIndexById(@NotNull Long id) {
+    public boolean deleteIndexById(Long id) {
+        Assert.notNull(id);
         TryHelper.function(luceneUtil::deleteByQuery, LongPoint.newExactQuery(PREFIX + ID, id));
         return true;
     }
@@ -109,7 +109,8 @@ public class LuceneImpl implements SearchEngineService {
     }
 
     @Override
-    public IFileIndex getIndexById(@NotNull Long id) {
+    public IFileIndex getIndexById(Long id) {
+        Assert.notNull(id);
         Document document = searchDocumentById(id);
         Assert.notNull(document, "file not exist");
         return getIFileIndex(document);
@@ -148,8 +149,8 @@ public class LuceneImpl implements SearchEngineService {
 
     }
 
-    private SimpleFileDto getIFileIndex(Document document) {
-        return SimpleFileDto.FileIndexDtoBuilder.aFileIndexDto()
+    private LuceneFileIndexDto getIFileIndex(Document document) {
+        return LuceneFileIndexDto.FileIndexDtoBuilder.aFileIndexDto()
                 .withId(document.getField(ID).numericValue().longValue())
                 .withType(document.get(TYPE))
                 .withSize(document.getField(SIZE).numericValue().longValue())

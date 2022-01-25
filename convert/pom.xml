@@ -21,6 +21,24 @@
         </dependency>
 
         <dependency>
+            <groupId>top.fan2wan</groupId>
+            <artifactId>file-server.oss</artifactId>
+            <version>${oss.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>top.fan2wan</groupId>
+            <artifactId>file-server.common-util</artifactId>
+            <version>${common-util.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -89,24 +107,6 @@
             <groupId>com.aspose</groupId>
             <artifactId>aspose-words</artifactId>
             <version>18.8</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>top.fan2wan</groupId>
-            <artifactId>file-server.oss</artifactId>
-            <version>${oss.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>asm</artifactId>
-                    <groupId>org.ow2.asm</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-parsers -->

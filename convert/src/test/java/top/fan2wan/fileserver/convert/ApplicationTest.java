@@ -3,7 +3,6 @@ package top.fan2wan.fileserver.convert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import top.fan2wan.fileserver.convert.util.OpenOfficeUtil;
 import top.fan2wan.fileserver.oss.dto.OssFileDto;
 import top.fan2wan.fileserver.oss.service.OssService;

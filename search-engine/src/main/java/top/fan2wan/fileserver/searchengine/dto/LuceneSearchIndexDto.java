@@ -7,7 +7,7 @@ import java.util.Objects;
  * @Date: 2022/1/19 9:29
  * @Description: dto for searchIndex
  */
-public class SearchIndexDto implements ISearchIndex {
+public class LuceneSearchIndexDto implements ISearchIndex {
 
     private String content;
 
@@ -109,16 +109,16 @@ public class SearchIndexDto implements ISearchIndex {
             return this;
         }
 
-        public SearchIndexDto build() {
-            SearchIndexDto searchIndexDto = new SearchIndexDto();
-            searchIndexDto.name = this.name;
-            searchIndexDto.orderBy = this.orderBy;
-            searchIndexDto.isAllMatch = this.isAllMatch;
-            searchIndexDto.isDesc = this.isDesc;
-            searchIndexDto.searchNumber = this.searchNumber;
-            searchIndexDto.content = this.content;
-            searchIndexDto.type = this.type;
-            return searchIndexDto;
+        public LuceneSearchIndexDto build() {
+            LuceneSearchIndexDto luceneSearchIndexDto = new LuceneSearchIndexDto();
+            luceneSearchIndexDto.name = this.name;
+            luceneSearchIndexDto.orderBy = this.orderBy;
+            luceneSearchIndexDto.isAllMatch = this.isAllMatch;
+            luceneSearchIndexDto.isDesc = this.isDesc;
+            luceneSearchIndexDto.searchNumber = this.searchNumber;
+            luceneSearchIndexDto.content = this.content;
+            luceneSearchIndexDto.type = this.type;
+            return luceneSearchIndexDto;
         }
     }
 }

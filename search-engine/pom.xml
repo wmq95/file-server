@@ -13,6 +13,19 @@
     <version>${search-engine.version}</version>
 
     <dependencies>
+
+        <dependency>
+            <groupId>top.fan2wan</groupId>
+            <artifactId>file-server.search-api</artifactId>
+            <version>${search.api.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>top.fan2wan</groupId>
+            <artifactId>file-server.common-util</artifactId>
+            <version>${common-util.version}</version>
+        </dependency>
+        
         <!-- Lucence核心包 -->
         <dependency>
             <groupId>org.apache.lucene</groupId>
@@ -55,15 +68,5 @@
             <version>8.0.0</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-logging</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-        </dependency>
     </dependencies>
 </project>

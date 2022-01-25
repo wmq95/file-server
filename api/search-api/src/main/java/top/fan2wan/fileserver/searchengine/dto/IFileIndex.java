@@ -1,11 +1,5 @@
 package top.fan2wan.fileserver.searchengine.dto;
 
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
-import org.apache.lucene.document.LongPoint;
-
-import java.util.List;
-
 /**
  * @Author: fanT
  * @Date: 2022/1/12 14:10

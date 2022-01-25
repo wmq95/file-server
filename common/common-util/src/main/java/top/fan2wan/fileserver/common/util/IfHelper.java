@@ -1,4 +1,4 @@
-package top.fan2wan.fileserver.searchengine.util;
+package top.fan2wan.fileserver.common.util;
 
 import cn.hutool.core.util.StrUtil;
 

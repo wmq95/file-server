@@ -8,7 +8,7 @@ import java.util.StringJoiner;
  * @Description: dto for fileIndex
  * toString 没有打印内容
  */
-public class SimpleFileDto implements IFileIndex {
+public class LuceneFileIndexDto implements IFileIndex {
 
     private Long id;
 
@@ -111,22 +111,22 @@ public class SimpleFileDto implements IFileIndex {
             return this;
         }
 
-        public SimpleFileDto build() {
-            SimpleFileDto simpleFileDTO = new SimpleFileDto();
-            simpleFileDTO.path = this.path;
-            simpleFileDTO.createTime = this.createTime;
-            simpleFileDTO.id = this.id;
-            simpleFileDTO.content = this.content;
-            simpleFileDTO.size = this.size;
-            simpleFileDTO.type = this.type;
-            simpleFileDTO.name = this.name;
-            return simpleFileDTO;
+        public LuceneFileIndexDto build() {
+            LuceneFileIndexDto luceneFileIndexDTO = new LuceneFileIndexDto();
+            luceneFileIndexDTO.path = this.path;
+            luceneFileIndexDTO.createTime = this.createTime;
+            luceneFileIndexDTO.id = this.id;
+            luceneFileIndexDTO.content = this.content;
+            luceneFileIndexDTO.size = this.size;
+            luceneFileIndexDTO.type = this.type;
+            luceneFileIndexDTO.name = this.name;
+            return luceneFileIndexDTO;
         }
     }
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", SimpleFileDto.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", LuceneFileIndexDto.class.getSimpleName() + "[", "]")
                 .add("id=" + id)
                 .add("path='" + path + "'")
                 .add("name='" + name + "'")
