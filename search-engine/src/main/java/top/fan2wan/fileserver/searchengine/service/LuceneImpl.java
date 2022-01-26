@@ -16,9 +16,7 @@ import top.fan2wan.fileserver.searchengine.dto.ISearchIndex;
 import top.fan2wan.fileserver.searchengine.dto.LuceneFileIndexDto;
 import top.fan2wan.fileserver.searchengine.util.LuceneUtil;
 
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,18 +92,11 @@ public class LuceneImpl implements SearchEngineService {
         String orderBy = StrUtil.isNotBlank(searchIndex.getOrderBy()) ? searchIndex.getOrderBy() : CREATE_TIME;
         orderBy = PREFIX + orderBy;
 
-        List<IFileIndex> res = new LinkedList<>();
-        try {
-            TopDocs search = luceneUtil.search(queryBuilder.build(), searchIndex.getSearchNumber(),
-                    new Sort(new SortField(orderBy, SortField.Type.LONG, searchIndex.isDesc())));
+        TopDocs search = TryHelper.function(luceneUtil::search, queryBuilder.build(), searchIndex.getSearchNumber(),
+                new Sort(new SortField(orderBy, SortField.Type.LONG, searchIndex.isDesc())));
 
-            res.addAll(Arrays.stream(search.scoreDocs)
-                    .map(this::transform).collect(Collectors.toList()));
-        } catch (IOException e) {
-            logger.error("failed to search index, param was:{},error was:{}", searchIndex, e);
-            return res;
-        }
-        return res;
+        return Arrays.stream(search.scoreDocs)
+                .map(this::transform).collect(Collectors.toList());
     }
 
     @Override
@@ -131,7 +122,7 @@ public class LuceneImpl implements SearchEngineService {
     }
 
     private Document searchDocumentById(Long id) {
-        TopDocs docs = TryHelper.function(luceneUtil::search, LongPoint.newExactQuery(PREFIX + ID, id));
+        TopDocs docs = TryHelper.function(luceneUtil::search, LongPoint.newExactQuery(PREFIX + ID, id), 10);
         return docs.scoreDocs.length == 1 ? TryHelper.function(luceneUtil::searchByDocId, docs.scoreDocs[0].doc)
                 : null;
     }

@@ -3,7 +3,6 @@ package top.fan2wan.fileserver.oss.service;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.http.HttpUtil;
 import com.google.gson.Gson;
-import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.DownloadUrl;
@@ -11,6 +10,7 @@ import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
+import top.fan2wan.fileserver.common.util.TryHelper;
 import top.fan2wan.fileserver.oss.dto.IOssFile;
 
 /**
@@ -55,16 +55,9 @@ public class XiNiuOssServiceImpl implements OssService {
         UploadManager uploadManager = new UploadManager(cfg);
         Auth auth = Auth.create(accessKey, secretKey);
         String upToken = auth.uploadToken(bucket);
-        Response response;
-        try {
-            response = uploadManager.put(localFilePath, ossFilePth, upToken);
-            //解析上传成功的结果
-            DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
-            logger.info("save success, key was :{},hash was:{}", putRet.key, putRet.hash);
-        } catch (QiniuException e) {
-            logger.error("fail to save oss,error was \n", e);
-            throw new RuntimeException(e.getMessage());
-        }
+        Response response = TryHelper.function(uploadManager::put,localFilePath, ossFilePth, upToken);
+        DefaultPutRet putRet = new Gson().fromJson(TryHelper.function(response::bodyString), DefaultPutRet.class);
+        logger.info("save success, key was :{},hash was:{}", putRet.key, putRet.hash);
     }
 
     /**
@@ -88,11 +81,6 @@ public class XiNiuOssServiceImpl implements OssService {
     private String getOssFileUrl(String ossFilePath) {
         DownloadUrl url = new DownloadUrl(domain, false, ossFilePath);
         Auth auth = Auth.create(accessKey, secretKey);
-        try {
-            return url.buildURL(auth, System.currentTimeMillis() + expire);
-        } catch (QiniuException e) {
-            logger.error("fail to get ossFile downloadUrl, error was\n", e);
-            throw new RuntimeException(e.getMessage());
-        }
+        return TryHelper.function(url::buildURL, auth, System.currentTimeMillis() + expire);
     }
 }

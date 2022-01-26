@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
+import top.fan2wan.fileserver.common.util.TryHelper;
 import top.fan2wan.fileserver.convert.cons.BusinessCons;
 import top.fan2wan.fileserver.convert.service.IConvertService;
 import top.fan2wan.fileserver.convert.util.OpenOfficeUtil;
@@ -99,7 +100,7 @@ public class ConvertServiceImpl implements IConvertService {
         /**
          * 发送回调
          */
-        sendFileCallback(buildDto(file.getFileId(),convertedPath,CONVERTED_SUCCESS,getContent(contentFuture)));
+        sendFileCallback(buildDto(file.getFileId(), convertedPath, CONVERTED_SUCCESS, getContent(contentFuture)));
 
         /**
          * 清理工作目录...
@@ -107,12 +108,8 @@ public class ConvertServiceImpl implements IConvertService {
     }
 
     private String getContent(CompletableFuture<String> contentFuture) {
-        try {
-            return contentFuture.get(3, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            logger.error("failed to parseContent,error was:", e);
-        }
-        return null;
+
+        return TryHelper.functionOrElse(contentFuture::get, 3, TimeUnit.SECONDS, null);
     }
 
     private FileCallbackDto buildDto(Long fileId, String convertedPath, String status, String content) {
@@ -136,11 +133,8 @@ public class ConvertServiceImpl implements IConvertService {
     }
 
     private String parseContent(String localPath) {
-        try {
-            return TiKaUtil.parseContent(localPath);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
+        return TryHelper.function(TiKaUtil::parseContent, localPath);
     }
 
     private boolean convertFile2Pdf(String localPath, String pdfFilePath) throws Exception {

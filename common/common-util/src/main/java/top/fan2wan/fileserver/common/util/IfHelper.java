@@ -11,6 +11,12 @@ import java.util.function.Consumer;
  */
 public class IfHelper {
 
+    /**
+     * if(StrUtil.isNotBlank(str)) doConsumer
+     *
+     * @param str      string
+     * @param consumer consumer
+     */
     public static void isNotBlank(String str, Consumer<String> consumer) {
         if (StrUtil.isNotBlank(str)) {
             consumer.accept(str);

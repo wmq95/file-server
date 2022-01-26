@@ -71,10 +71,6 @@ public class LuceneUtil {
         return true;
     }
 
-    public TopDocs search(Query query) throws IOException {
-        return this.searcher.search(query, 10);
-    }
-
     public TopDocs search(Query query, int num) throws IOException {
         return this.searcher.search(query, num);
     }
