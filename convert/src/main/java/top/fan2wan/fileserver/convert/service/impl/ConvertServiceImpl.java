@@ -52,7 +52,7 @@ public class ConvertServiceImpl implements IConvertService {
             logger.debug("sendFileCallback, fileId was :{}, status was :{},convertedPath was:{}",
                     fileCallback.getFileId(), fileCallback.getStatus(), fileCallback.getConvertedPath());
         }
-        //streamBridge.send("", fileCallback);
+        streamBridge.send("resourceService", fileCallback);
     }
 
     @Override

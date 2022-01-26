@@ -1,9 +1,11 @@
 package top.fan2wan.fileserver.convert.config;
 
 import com.qiniu.storage.Region;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import top.fan2wan.fileserver.oss.config.AbstractOssProperty;
 import top.fan2wan.fileserver.oss.service.OssService;
 import top.fan2wan.fileserver.oss.service.XiNiuOssServiceImpl;
 
@@ -14,19 +16,21 @@ import top.fan2wan.fileserver.oss.service.XiNiuOssServiceImpl;
  */
 @Configuration
 public class OssConfig {
-    @Value("${oss.bucket}")
-    private String bucket;
-    @Value("${oss.accessKey}")
-    private String accessKey;
-    @Value("${oss.secretKey}")
-    private String secretKey;
-    @Value("${oss.domain}")
-    private String domain;
-    @Value("${oss.expire}")
-    private long expire;
+    final OssProperty oss;
+
+    public OssConfig(OssProperty oss) {
+        this.oss = oss;
+    }
 
     @Bean
     public OssService ossService() {
-        return new XiNiuOssServiceImpl(bucket, accessKey, secretKey, domain, Region.huanan(), expire);
+        return new XiNiuOssServiceImpl(oss.getBucket(), oss.getAccessKey(),
+                oss.getSecretKey(), oss.getDomain(), Region.huanan(), oss.getExpire());
     }
+}
+
+@Component
+@ConfigurationProperties(prefix = "oss")
+class OssProperty extends AbstractOssProperty {
+
 }

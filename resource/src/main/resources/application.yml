@@ -1,0 +1,15 @@
+server:
+  port: 7998
+  servlet:
+    context-path: /resource
+spring:
+  application:
+    name: resource
+  rabbitmq:
+    addresses: amqps://fqkoxhhx:4OlK0wvSve7FRmY__h3mKh4C-zmwgln-@fish.rmq.cloudamqp.com/fqkoxhhx
+  cloud:
+    stream:
+      bindings:
+        resourceService-in-0:
+          destination: resourceService
+          group: resourceGroup

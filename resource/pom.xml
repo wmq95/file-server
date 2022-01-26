@@ -14,9 +14,23 @@
 
 
     <dependencies>
+
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-elasticsearch</artifactId>
+            <groupId>top.fan2wan</groupId>
+            <artifactId>file-server.search-engine</artifactId>
+            <version>${search-engine.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.fan2wan</groupId>
+            <artifactId>file-server.oss</artifactId>
+            <version>${oss.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.fan2wan</groupId>
+            <artifactId>file-server.mq</artifactId>
+            <version>${mq.version}</version>
         </dependency>
 
         <dependency>

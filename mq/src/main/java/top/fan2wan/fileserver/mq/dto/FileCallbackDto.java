@@ -55,7 +55,7 @@ public class FileCallbackDto {
                 .add("fileId", fileId)
                 .add("status", status)
                 .add("convertedPath", convertedPath)
-                .add("fileContent", fileContent)
+                //.add("fileContent", fileContent)
                 .toString();
     }
 
